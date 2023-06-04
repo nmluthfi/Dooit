@@ -48,10 +48,10 @@ class Home extends StatelessWidget {
 
       body:
       //    if not empty, show the data
-      MainLayout(),
+      // MainLayout(),
 
       //  if empty, show the empty state
-      // EmptyState(),
+      EmptyState(),
 
     );
   }

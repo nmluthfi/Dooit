@@ -1,5 +1,7 @@
 import 'package:dooit/Home/home.dart';
+import 'package:dooit/home/empty_state.dart';
 import 'package:dooit/screens/splash_screen.dart';
+import 'package:dooit/todo/todo.dart';
 import 'package:dooit/todo/todo_detail.dart';
 import 'package:dooit/todo/todo_input.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: SplashScreen(),
+      home: Todo(),
     );
   }
 }

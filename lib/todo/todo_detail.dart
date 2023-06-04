@@ -1,4 +1,3 @@
-import 'package:dooit/todo/utils/appbar_todo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:faker/faker.dart';
@@ -17,9 +16,7 @@ class DetailTodo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBarTodo(),
-      body: Container(
+    return Container(
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
         child: Column(
           children: [
@@ -140,8 +137,7 @@ class DetailTodo extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
 }
