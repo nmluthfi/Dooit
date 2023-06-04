@@ -2,7 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:icons_plus/icons_plus.dart';
 
-class SplashScreen extends StatelessWidget {
+// firebase
+import 'package:firebase_auth/firebase_auth.dart';
+
+// google sign in
+import 'package:google_sign_in/google_sign_in.dart';
+
+
+class SplashScreen extends StatefulWidget {
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +74,7 @@ class SplashScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                ElevatedButton.icon(onPressed: (){
+                ElevatedButton.icon(onPressed: () {
 
                   },
                   style: ElevatedButton.styleFrom(
@@ -92,5 +106,5 @@ class SplashScreen extends StatelessWidget {
       )
     );
   }
-
 }
+
