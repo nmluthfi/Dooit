@@ -5,49 +5,14 @@ import 'package:icons_plus/icons_plus.dart';
 
 // firebase
 import 'package:firebase_auth/firebase_auth.dart';
-
-// google sign in
-import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 
 class SplashScreen extends StatefulWidget {
-
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-
-
 class _SplashScreenState extends State<SplashScreen> {
-
-  // function to implement the google signin
-
-  // creating firebase instance
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
-  Future<void> signup(BuildContext context) async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-    if (googleSignInAccount != null) {
-      final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
-      final AuthCredential authCredential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken);
-
-      // Getting users credential
-      UserCredential result = await auth.signInWithCredential(authCredential);
-      User? user = result.user;
-
-      if (result != null) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Home()));
-      }  // if result not null we simply call the MaterialpageRoute,
-      // for go to the HomePage screen
-    }
-  }
-
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -105,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 ElevatedButton.icon(onPressed: () {
-                    signup(context);
+
                   },
                   style: ElevatedButton.styleFrom(
                       primary: Colors.white,

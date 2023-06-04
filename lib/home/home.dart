@@ -1,9 +1,32 @@
 import 'package:dooit/home/empty_state.dart';
 import 'package:dooit/home/main_layout.dart';
+import 'package:dooit/screens/splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User? user) {
+      if (user == null) {
+        // move to SplashScreen
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => SplashScreen()), (Route<dynamic> route) => false);
+      } else {
+        print('User is signed in!');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +75,6 @@ class Home extends StatelessWidget {
 
       //  if empty, show the empty state
       EmptyState(),
-
     );
   }
 }
