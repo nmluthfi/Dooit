@@ -4,6 +4,7 @@ import 'package:dooit/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Home extends StatefulWidget {
 
@@ -16,9 +17,11 @@ class _HomeState extends State<Home> {
 
   void initState() {
     super.initState();
+    // checking if user is signed in
     FirebaseAuth.instance
         .authStateChanges()
-        .listen((User? user) {
+        .listen((User? user) async {
+      // if user is not signed in, move to SplashScreen
       if (user == null) {
         // move to SplashScreen
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => SplashScreen()), (Route<dynamic> route) => false);
@@ -27,6 +30,7 @@ class _HomeState extends State<Home> {
       }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -7,12 +7,58 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+// auth
+import 'package:google_sign_in/google_sign_in.dart';
+
+Future<UserCredential> signInWithGoogle(BuildContext context) async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // if users sucessfully login, move to Home
+  if (credential != null) {
+    // move to Home
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => Home()), (Route<dynamic> route) => false);
+  } else {
+    // else, stay in SplashScreen
+    print('User is not signed in!');
+  }
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
+
 class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  void iniState(){
+    super.initState();
+    // checking if user is signed in
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User? user) async {
+      // if user is signed in, move to Home
+      if (user != null) {
+        // move to Home
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => Home()), (Route<dynamic> route) => false);
+      } else {
+        print('User is not signed in!');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -69,8 +115,8 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                ElevatedButton.icon(onPressed: () {
-
+                ElevatedButton.icon(onPressed: () async {
+                    signInWithGoogle(context);
                   },
                   style: ElevatedButton.styleFrom(
                       primary: Colors.white,

@@ -20,9 +20,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // ideal time to initialize
-  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-
   runApp(const MyApp());
 }
 
@@ -39,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Todo(),
+      home: Home(),
     );
   }
 }
