@@ -24,7 +24,10 @@ class _HomeState extends State<Home> {
       // if user is not signed in, move to SplashScreen
       if (user == null) {
         // move to SplashScreen
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => SplashScreen()), (Route<dynamic> route) => false);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context)  => SplashScreen()),
+            (Route<dynamic> route) => false
+        );
       } else {
         print('User is signed in!');
       }

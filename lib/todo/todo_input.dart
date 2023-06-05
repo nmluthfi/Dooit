@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InputTodo extends StatelessWidget {
+class InputTodo extends StatefulWidget {
+
+  @override
+  State<InputTodo> createState() => _InputTodoState();
+}
+
+class _InputTodoState extends State<InputTodo> {
 
   List<String> labelOptions = [
     "Personal",
     "Work",
     "Others"
   ];
+
+  var selectedOption;
 
   @override
   Widget build(BuildContext context) {
@@ -98,11 +106,15 @@ class InputTodo extends StatelessWidget {
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                selected: false,
+                                selected: selectedOption == index,
                                 onSelected: (selected) {
                                   print(labelOptions[index]);
+                                  selected = true;
+                                  setState(() {
+                                    selectedOption = selected ? index : -1;
+                                  });
                                 },
-                                selectedColor: Color(0xffF5F5F5),
+                                selectedColor: Colors.black,
                                 backgroundColor: Color(0xff898989),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6),
@@ -125,5 +137,4 @@ class InputTodo extends StatelessWidget {
       ),
     );
   }
-
 }

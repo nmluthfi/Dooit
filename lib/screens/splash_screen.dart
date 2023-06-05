@@ -23,17 +23,23 @@ Future<UserCredential> signInWithGoogle(BuildContext context) async {
     idToken: googleAuth?.idToken,
   );
 
-  // if users sucessfully login, move to Home
-  if (credential != null) {
-    // move to Home
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => Home()), (Route<dynamic> route) => false);
-  } else {
-    // else, stay in SplashScreen
-    print('User is not signed in!');
-  }
+  try {
+    // Once signed in, return the UserCredential
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential).then((userCredential) {
+      // Move to Home after successful login
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context)  => Home()),
+          (Route<dynamic> route) => false
+      );
+    });
 
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
+    return userCredential;
+  } catch (e) {
+    // Handle any errors
+    print('Error signing in with Google: $e');
+    // You can choose to show an error message or handle the error in any other way
+    throw e;
+  }
 }
 
 class SplashScreen extends StatefulWidget {

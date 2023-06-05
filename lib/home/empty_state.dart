@@ -1,3 +1,4 @@
+import 'package:dooit/todo/todo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -37,7 +38,12 @@ class EmptyState extends StatelessWidget {
               ),
               SizedBox(height: 28),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Todo()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   primary: const Color(0xFF000000),
                   minimumSize: Size(125, 45),
