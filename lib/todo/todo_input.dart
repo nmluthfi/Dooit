@@ -51,6 +51,11 @@ Future<void> saveTodo(BuildContext context) async {
                   MaterialPageRoute(builder: (context) => Home()),
                       (Route<dynamic> route) => false,
                 );
+
+                // clear all of the field
+                titleController.clear();
+                descController.clear();
+                selectedOption = -1;
               },
               child: Text('OK'),
             ),
@@ -66,7 +71,6 @@ Future<void> saveTodo(BuildContext context) async {
 }
 
 class InputTodo extends StatefulWidget {
-
   @override
   State<InputTodo> createState() => _InputTodoState();
 }
@@ -90,7 +94,6 @@ class _InputTodoState extends State<InputTodo> {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
