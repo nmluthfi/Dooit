@@ -1,4 +1,5 @@
 import 'package:dooit/Home/home.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -9,6 +10,10 @@ import 'package:firebase_core/firebase_core.dart';
 
 // auth
 import 'package:google_sign_in/google_sign_in.dart';
+
+// Firebase
+FirebaseDatabase database = FirebaseDatabase.instance;
+DatabaseReference ref = FirebaseDatabase.instance.ref();
 
 Future<UserCredential> signInWithGoogle(BuildContext context) async {
   // Trigger the authentication flow
@@ -25,12 +30,31 @@ Future<UserCredential> signInWithGoogle(BuildContext context) async {
 
   try {
     // Once signed in, return the UserCredential
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential).then((userCredential) {
-      // Move to Home after successful login
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context)  => Home()),
-          (Route<dynamic> route) => false
-      );
+    final userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .then((userCredential) async {
+          // save user data to Firebase Database
+      await ref.child("users").push().set({
+        "userid": userCredential.user?.uid,
+        "name": userCredential.user?.displayName,
+        "email": userCredential.user?.email,
+        "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
+      }).then((_) {
+        // Data saved successfully!
+        print("Success saves users credential");
+
+        // Move to Home after successful login
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context)  => Home()),
+                (Route<dynamic> route) => false
+        );
+      }).catchError((error) {
+        // The write failed...
+        print("Someting wrong");
+      });
+    }).catchError((error) {
+      // The write failed...
+      print("Can't login with Google: $error");
     });
 
     return userCredential;
@@ -49,8 +73,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 
-  void iniState(){
+  void iniState()  {
     super.initState();
+     // FirebaseAuth.instance.signOut();
+     // GoogleSignIn().signOut();
+     // GoogleSignIn().disconnect();
+
     // checking if user is signed in
     FirebaseAuth.instance
         .authStateChanges()

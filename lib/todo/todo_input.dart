@@ -30,7 +30,7 @@ var userId;
 
 Future<void> saveTodo(BuildContext context) async {
 
-  await ref.child("todo").push().set({
+  await ref.child("todos").push().set({
     "userid": userId,
     "title": titleController.text,
     "description": descController.text,

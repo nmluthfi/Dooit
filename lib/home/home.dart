@@ -13,8 +13,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  void initState() {
+  void initState()  {
     super.initState();
+     // FirebaseAuth.instance.signOut();
+     // GoogleSignIn().signOut();
+     // GoogleSignIn().disconnect();
+
     // checking if user is signed in
     FirebaseAuth.instance
         .authStateChanges()
