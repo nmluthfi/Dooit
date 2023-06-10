@@ -1,4 +1,5 @@
 import 'package:dooit/todo/todo.dart';
+import 'package:dooit/todo/todo_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -41,7 +42,7 @@ class EmptyState extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Todo()),
+                    MaterialPageRoute(builder: (context) => InputTodo()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

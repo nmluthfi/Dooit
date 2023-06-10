@@ -1,5 +1,69 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// firebase
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/svg.dart';
+
+import '../Home/home.dart';
+import '../screens/splash_screen.dart';
+
+FirebaseDatabase database = FirebaseDatabase.instance;
+DatabaseReference ref = FirebaseDatabase.instance.ref();
+
+// label options
+List<String> labelOptions = [
+  "Personal",
+  "Work",
+  "Others"
+];
+var selectedOption;
+
+// form handler
+final titleController = TextEditingController();
+final descController = TextEditingController();
+
+var userId;
+
+Future<void> saveTodo(BuildContext context) async {
+
+  await ref.child("todo").push().set({
+    "userid": userId,
+    "title": titleController.text,
+    "description": descController.text,
+    "label": selectedOption,
+    "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
+  }).then((_) {
+    print("Success Add New Todo");
+    // Data saved successfully!
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success Add New Todo'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => Home()),
+                      (Route<dynamic> route) => false,
+                );
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }).catchError((error) {
+    // The write failed...
+    print("Someting wrong");
+  });
+
+}
 
 class InputTodo extends StatefulWidget {
 
@@ -9,131 +73,236 @@ class InputTodo extends StatefulWidget {
 
 class _InputTodoState extends State<InputTodo> {
 
-  List<String> labelOptions = [
-    "Personal",
-    "Work",
-    "Others"
-  ];
+  final _formKey = GlobalKey<FormState>();
 
-  var selectedOption;
+  @override
+  void initState() {
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User? user) {
+      // if user is not signed in, move to SplashScreen
+      if (user == null) {
+        // move to SplashScreen
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)  => SplashScreen()), (Route<dynamic> route) => false);
+      } else {
+        userId = user.uid;
+        print('User is signed in!');
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.fromLTRB(24, 0, 24, 18),
-        child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: const Color(0xFFFFFFFF),
+        elevation: 0,
+        title: Row(
           children: [
-            TextFormField(
-              maxLines: 1,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(30),
-              ],
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.bold
-              ),
-              decoration: InputDecoration(
-                hintText: "Title",
-                hintStyle: TextStyle(
+            SvgPicture.network(
+                'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fdooit_logo.svg?alt=media&token=059e3656-89dc-4e2b-810c-89485b210b88',
+                width: 25,
+                height: 25,
+                fit: BoxFit.contain
+            ),
+            SizedBox(width: 7),
+            Text(
+                'Dooit',
+                style: TextStyle(
                   color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold
-                ),
-                border: InputBorder.none,
-              ),
-            ),
-            TextFormField(
-              onTapOutside: (text) {
-                FocusScope.of(context).unfocus();
-              },
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              style: TextStyle(
-                color: Color(0xd8000000),
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-              ),
-              decoration: InputDecoration(
-                hintText: "Write your to-do here...",
-                hintStyle: TextStyle(
-                  color: Color(0xd8000000),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-                border: InputBorder.none,
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    margin: const EdgeInsets. fromLTRB(0, 27.5, 0, 50),
-                    padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
-                    alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            top: BorderSide(
-                                color: Color(0xDADADADA),
-                                width: 1
-                            )
-                        )
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Choose a label",
-                          style: TextStyle(
-                            color: Color(0xff000000),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Wrap(
-                          direction: Axis.horizontal,
-                          children: List.generate(labelOptions.length, (index) {
-                            return Container(
-                              margin: const EdgeInsets.fromLTRB(0, 8, 13, 0),
-                              child: ChoiceChip(
-                                label: Text(
-                                  labelOptions[index],
-                                  style: TextStyle(
-                                    color: Color(0xffffffff),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                selected: selectedOption == index,
-                                onSelected: (selected) {
-                                  print(labelOptions[index]);
-                                  selected = true;
-                                  setState(() {
-                                    selectedOption = selected ? index : -1;
-                                  });
-                                },
-                                selectedColor: Colors.black,
-                                backgroundColor: Color(0xff898989),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  side: BorderSide(
-                                    color: Color(0xffDADADA),
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Codec Cold Trial',
+                )
             ),
           ],
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.image,
+              color: Colors.black,
+            ),
+            onPressed: () {
+
+            },
+          ),
+          IconButton(
+            padding: EdgeInsets.fromLTRB(4, 0, 2, 0),
+            constraints: BoxConstraints(),
+            icon: Icon(
+              Icons.save,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              if (selectedOption == null || selectedOption == -1) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select the label')),
+                );
+              } else {
+                // Validate returns true if the form is valid, or false otherwise.
+                if (_formKey.currentState!.validate()) {
+                  // If the form is valid, display a snackbar. In the real world,
+                  // you'd often call a server or save the information in a database.
+                  print(titleController.text + "\n" + descController.text + "\n" + selectedOption.toString());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Processing Data')),
+                  );
+                  saveTodo(context);
+                }
+              }
+            },
+          ),
+          IconButton(
+            onPressed: () {
+
+            },
+            icon: Icon(
+              Icons.delete,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(width: 16),
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: Container(
+            margin: const EdgeInsets.fromLTRB(24, 0, 24, 18),
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: titleController,
+                  maxLines: 1,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(30),
+                  ],
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Title",
+                    hintStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: descController,
+                  onTapOutside: (text) {
+                    FocusScope.of(context).unfocus();
+                  },
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  style: TextStyle(
+                    color: Color(0xd8000000),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Write your to-do here...",
+                    hintStyle: TextStyle(
+                      color: Color(0xd8000000),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets. fromLTRB(0, 27.5, 0, 50),
+                        padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                        alignment: Alignment.topLeft,
+                        decoration: BoxDecoration(
+                            border: Border(
+                                top: BorderSide(
+                                    color: Color(0xDADADADA),
+                                    width: 1
+                                )
+                            )
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Choose a label",
+                              style: TextStyle(
+                                color: Color(0xff000000),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Wrap(
+                              direction: Axis.horizontal,
+                              children: List.generate(labelOptions.length, (index) {
+                                return Container(
+                                  margin: const EdgeInsets.fromLTRB(0, 8, 13, 0),
+                                  child: ChoiceChip(
+                                    label: Text(
+                                      labelOptions[index],
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    selected: selectedOption == index,
+                                    onSelected: (selected) {
+                                      setState(() {
+                                        selectedOption = selected ? index : -1;
+                                        print(selectedOption);
+                                        print(labelOptions[index]);
+                                      });
+                                    },
+                                    selectedColor: Colors.black,
+                                    backgroundColor: Color(0xff898989),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                      side: BorderSide(
+                                        color: Color(0xffDADADA),
+                                        width: 1,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+          ),
+        ),
       ),
     );
   }
