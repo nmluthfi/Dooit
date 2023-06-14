@@ -99,12 +99,28 @@ class _HomeState extends State<Home> {
 
             },
           ),
-          IconButton
-            (onPressed: () {
-              logout(context);
-            }, icon: Icon(
-              Icons.logout,
-              color: Colors.black,
+          IconButton(
+              onPressed: ()  => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                content: const Text('Are you sure wants to logout?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      logout(context);
+                    },
+                    child: const Text('Yes'),
+                    ),
+                 ],
+                ),
+              ),
+              icon: Icon(
+                Icons.logout,
+                color: Colors.black,
             ),
           ),
           SizedBox(width: 16),
