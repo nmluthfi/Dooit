@@ -1,4 +1,5 @@
 import 'package:faker/faker.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:random_date/random_date.dart';
@@ -6,10 +7,19 @@ import 'dart:math';
 
 import '../todo/todo_input.dart';
 
-// This is the type used by the popup menu below.
+// This is the list type used by the popup menu below.
 enum MenuItem { itemOne }
 
-class MainLayout extends StatelessWidget {
+// reference to todos in the database
+DatabaseReference todosCount = FirebaseDatabase.instance.ref('todos');
+
+class MainLayout extends StatefulWidget {
+
+  @override
+  State<MainLayout> createState() => _MainLayoutState();
+}
+
+class _MainLayoutState extends State<MainLayout> {
 
   // generates a random date for given range
   var randomDateOptions = RandomDateOptions.withDefaultYearsToCurrent(10);
@@ -136,7 +146,7 @@ class MainLayout extends StatelessWidget {
                                       initialValue: selectedMenu,
                                       // Callback that sets the selected popup menu item.
                                       onSelected: (MenuItem item) {
-
+                                        print("Selected item $item");
                                       },
                                       itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItem>>[
                                         const PopupMenuItem<MenuItem>(
