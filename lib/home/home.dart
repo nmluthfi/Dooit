@@ -2,22 +2,40 @@ import 'package:dooit/home/empty_state.dart';
 import 'package:dooit/home/main_layout.dart';
 import 'package:dooit/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+// reference to todos in the database
+DatabaseReference todosCount = FirebaseDatabase.instance.ref('todos');
 
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
 }
 
+
+Future<void> logout(BuildContext context) async {
+  // logout users from the app
+  await FirebaseAuth.instance.signOut();
+
+  // reset GoogleSignIn flow
+  await GoogleSignIn().signOut();
+  await GoogleSignIn().disconnect();
+
+
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => SplashScreen()),
+        (Route<dynamic> route) => false,
+  );
+}
+
 class _HomeState extends State<Home> {
+  bool isDataAvailable = false;
 
   void initState()  {
     super.initState();
-     // FirebaseAuth.instance.signOut();
-     // GoogleSignIn().signOut();
-     // GoogleSignIn().disconnect();
 
     // checking if user is signed in
     FirebaseAuth.instance
@@ -34,6 +52,15 @@ class _HomeState extends State<Home> {
         print('User is signed in!');
       }
     });
+
+    // check whether todos is already available in the database
+    todosCount.onValue.listen((DatabaseEvent event) {
+      final data = event.snapshot.value;
+      setState(() {
+        isDataAvailable = data != null;
+      });
+    });
+
   }
 
   @override
@@ -73,16 +100,21 @@ class _HomeState extends State<Home> {
 
             },
           ),
+          IconButton
+            (onPressed: () {
+              logout(context);
+            }, icon: Icon(
+              Icons.logout,
+              color: Colors.black,
+            ),
+          ),
           SizedBox(width: 16),
         ],
       ),
-
-      body:
-      //    if not empty, show the data
-      // MainLayout(),
-
-      //  if empty, show the empty state
-      EmptyState(),
+      // if todos is available in the DB show the MainLayout()
+      // else, show the EmptyState()
+      body: isDataAvailable ? MainLayout() : EmptyState(),
     );
   }
+
 }

@@ -33,9 +33,26 @@ Future<UserCredential> signInWithGoogle(BuildContext context) async {
     final userCredential = await FirebaseAuth.instance
         .signInWithCredential(credential)
         .then((userCredential) async {
-          // save user data to Firebase Database
+      // Retrieve the userId from the userCredential
+      final String? userId = userCredential.user?.uid;
+
+      // Check if the userId exists in the database
+      final dataSnapshot = await ref.child("users").orderByChild("userid").equalTo(userId).once();
+
+      if (dataSnapshot.snapshot.value != null) {
+        // User already exists, log in directly
+        print("User already exists. Logging in...");
+        // Move to Home after successful login
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => Home()),
+                (Route<dynamic> route) => false
+        );
+        return userCredential; // Return the userCredential without saving
+      }
+
+      // User doesn't exist, save user data to Firebase Database
       await ref.child("users").push().set({
-        "userid": userCredential.user?.uid,
+        "userid": userId,
         "name": userCredential.user?.displayName,
         "email": userCredential.user?.email,
         "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
@@ -45,18 +62,19 @@ Future<UserCredential> signInWithGoogle(BuildContext context) async {
 
         // Move to Home after successful login
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context)  => Home()),
+            MaterialPageRoute(builder: (context) => Home()),
                 (Route<dynamic> route) => false
         );
       }).catchError((error) {
         // The write failed...
-        print("Someting wrong");
+        print("Something wrong while saving user data: $error");
       });
+      return userCredential;
     }).catchError((error) {
       // The write failed...
       print("Can't login with Google: $error");
+      throw error;
     });
-
     return userCredential;
   } catch (e) {
     // Handle any errors
@@ -64,6 +82,7 @@ Future<UserCredential> signInWithGoogle(BuildContext context) async {
     // You can choose to show an error message or handle the error in any other way
     throw e;
   }
+
 }
 
 class SplashScreen extends StatefulWidget {
