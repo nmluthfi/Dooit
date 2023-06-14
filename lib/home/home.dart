@@ -24,7 +24,6 @@ Future<void> logout(BuildContext context) async {
   await GoogleSignIn().signOut();
   await GoogleSignIn().disconnect();
 
-
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (context) => SplashScreen()),
         (Route<dynamic> route) => false,

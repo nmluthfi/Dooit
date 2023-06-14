@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:random_date/random_date.dart';
 import 'dart:math';
 
+import '../todo/todo_input.dart';
+
 // This is the type used by the popup menu below.
 enum MenuItem { itemOne }
 
@@ -163,7 +165,10 @@ class MainLayout extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
               onPressed: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => InputTodo()),
+                );
               },
               child: const Icon(
                 Icons.add,
