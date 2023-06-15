@@ -100,7 +100,10 @@ class _InputTodoState extends State<InputTodo> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: const Color(0xFFFFFFFF),
@@ -154,21 +157,12 @@ class _InputTodoState extends State<InputTodo> {
                   // you'd often call a server or save the information in a database.
                   print(titleController.text + "\n" + descController.text + "\n" + selectedOption.toString());
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
+                    const SnackBar(content: Text('Creating new todo')),
                   );
                   saveTodo(context);
                 }
               }
             },
-          ),
-          IconButton(
-            onPressed: () {
-
-            },
-            icon: Icon(
-              Icons.delete,
-              color: Colors.black,
-            ),
           ),
           SizedBox(width: 16),
         ],
@@ -201,7 +195,7 @@ class _InputTodoState extends State<InputTodo> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
+                      return 'Please enter the title';
                     }
                     return null;
                   },
@@ -230,7 +224,7 @@ class _InputTodoState extends State<InputTodo> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
+                      return 'Please enter the description';
                     }
                     return null;
                   },
