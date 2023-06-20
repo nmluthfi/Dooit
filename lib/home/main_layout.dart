@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dooit/todo/todo_detail.dart';
 import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -59,7 +60,7 @@ class _MainLayoutState extends State<MainLayout> {
           todoId: todoMap["todoId"] = entry.key,
           title: todoMap['title'],
           description: todoMap['description'],
-          tag: todoMap['label'] == 0 ? 'Personal' : todoMap['label'] == 1 ? 'Work' : 'Others',
+          label: todoMap['label'] == 0 ? 'Personal' : todoMap['label'] == 1 ? 'Work' : 'Others',
           date: DateTime.fromMillisecondsSinceEpoch(int.parse(todoMap['timestamp'])),
           userid: todoMap['userid'],
         );
@@ -92,6 +93,10 @@ class _MainLayoutState extends State<MainLayout> {
                   color: Colors.primaries[Random().nextInt(Colors.primaries.length)].withOpacity(0.5),
                   child: InkWell(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DetailTodo(todoId: todo.todoId)),
+                      );
                       print(todo.todoId);
                     },
                     child: Padding(
@@ -142,7 +147,7 @@ class _MainLayoutState extends State<MainLayout> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8),
                                   child: Text(
-                                    todo.tag,
+                                    todo.label,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 10,

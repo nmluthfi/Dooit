@@ -1,34 +1,114 @@
+import 'dart:async';
+
+import 'package:dooit/Home/home.dart';
 import 'package:dooit/model/todo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:faker/faker.dart';
 import 'package:lorem_ipsum/lorem_ipsum.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
-List<String> labelOptions = [
-  "Personal",
-  "Work",
-  "Others"
-];
-
-var selectedOption;
-
-// form handler
-final titleController = TextEditingController();
-final descController = TextEditingController();
-
 class DetailTodo extends StatefulWidget {
+  // In the constructor, require the key.
+  const DetailTodo({Key? key, required this.todoId});
+
+  // Declare a field that holds the key.
+  final String todoId;
 
   @override
   State<DetailTodo> createState() => _DetailTodoState();
 }
 
 class _DetailTodoState extends State<DetailTodo> {
-
   final _formKey = GlobalKey<FormState>();
 
+  List<String> labelOptions = [
+    "Personal",
+    "Work",
+    "Others"
+  ];
+
+  var selectedOption;
+
+  // form handler
+  final titleController = TextEditingController();
+  final descController = TextEditingController();
+
   var faker = new Faker();
+
+  late DatabaseReference todosRef;
+  late Todo todo;
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.todoId);
+    todosRef = FirebaseDatabase.instance.ref('todos').child(widget.todoId);
+    fetchTodoData(); // Fetch the todo data
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descController.dispose();
+    selectedOption = -1;
+    super.dispose();
+  }
+
+  void fetchTodoData() {
+    todosRef.once().then((event) {
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+        if (data != null) {
+          print(data);
+          try {
+            setState(() {
+              todo = Todo.fromMap(Map<String, dynamic>.from(data));
+              print(todo);
+              selectedOption = todo.label;
+              titleController.text = todo.title;
+              descController.text = todo.description;
+
+              print(selectedOption);
+              print(titleController.text);
+              print(descController.text);
+            });
+          } catch (error) {
+            print('Error during Todo.fromMap: $error');
+          }
+        }
+      }
+    }, onError: (error) {
+      print("Some error: " + error.toString());
+    });
+  }
+
+  void updateTodoData(BuildContext context) {
+    todosRef.update({
+      'title': titleController.text,
+      'description': descController.text,
+      'label': selectedOption,
+      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Todo updated successfully')),
+      );
+      // navigate to HomePage
+      Timer(Duration(seconds: 3), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => Home()),
+              (Route<dynamic> route) => false,
+        );
+      });
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update todo')),
+      );
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +172,7 @@ class _DetailTodoState extends State<DetailTodo> {
                     const SnackBar(content: Text('Processing Data')),
                   );
                   // saveTodo(context);
+                  updateTodoData(context);
                 }
               }
             },
@@ -123,7 +204,6 @@ class _DetailTodoState extends State<DetailTodo> {
                 TextFormField(
                   controller: titleController,
                   maxLines: 1,
-                  initialValue: faker.lorem.word(),
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(30),
                   ],
@@ -150,7 +230,6 @@ class _DetailTodoState extends State<DetailTodo> {
                 ),
                 TextFormField(
                   controller: descController,
-                  initialValue: loremIpsum(paragraphs: 10),
                   onTapOutside: (text) {
                     FocusScope.of(context).unfocus();
                   },
@@ -220,12 +299,16 @@ class _DetailTodoState extends State<DetailTodo> {
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
-                                    selected: false,
+                                    selected: selectedOption == index,
                                     onSelected: (selected) {
+                                      setState(() {
+                                        selectedOption = index;
+                                        print(selectedOption);
+                                      });
                                       print(labelOptions[index]);
                                     },
-                                    selectedColor: Color(0xffF5F5F5),
-                                    backgroundColor: Color(0xff000000),
+                                    selectedColor: Colors.black,
+                                    backgroundColor: selectedOption == index ? Colors.black : Color(0xff898989),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(6),
                                       side: BorderSide(
