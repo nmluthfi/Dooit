@@ -39,7 +39,7 @@ Future<void> saveTodo(BuildContext context) async {
   }).then((_) {
     print("Success Add New Todo");
     // Data saved successfully!
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 2), () {
       showDialog(
         context: context,
         builder: (BuildContext context) {

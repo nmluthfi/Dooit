@@ -109,6 +109,25 @@ class _DetailTodoState extends State<DetailTodo> {
     });
   }
 
+  void deleteTodoFromFirebase(String todoId) {
+    DatabaseReference todoToDelete = FirebaseDatabase.instance
+        .ref('todos').child(todoId);
+    todoToDelete.remove().then((value) {
+      print("Todo deleted successfully");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Todo deleted successfully')),
+      );
+      // navigate to HomePage
+      Timer(Duration(seconds: 2), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => Home()),
+              (Route<dynamic> route) => false,
+        );
+      });
+    }).catchError((error) {
+      print("Failed to delete todo: $error");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +198,45 @@ class _DetailTodoState extends State<DetailTodo> {
           ),
           IconButton(
             onPressed: () {
-
+              print("Todo to delete " + widget.todoId);
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Are you sure, want to delete ' + todo.title + '?'),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                            'OK',
+                            style: TextStyle(
+                              color: Colors.red,
+                            )
+                        ),
+                        onPressed: () {
+                          print("Ok");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: Duration(seconds: 1),
+                              content: Text("Deleting " + todo.title + '...'),
+                            ),
+                          );
+                          deleteTodoFromFirebase(widget.todoId);
+                          Timer(Duration(seconds: 1), () {
+                            Navigator.of(context).pop();
+                          });
+                        },
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            print("No");
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("No")
+                      )
+                    ],
+                  );
+                },
+              );
             },
             icon: Icon(
               Icons.delete,
