@@ -39,30 +39,27 @@ Future<void> saveTodo(BuildContext context) async {
   }).then((_) {
     print("Success Add New Todo");
     // Data saved successfully!
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Success Add New Todo'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => Home()),
-                      (Route<dynamic> route) => false,
-                );
-
-                // clear all of the field
-                titleController.clear();
-                descController.clear();
-                selectedOption = -1;
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    Timer(Duration(seconds: 3), () {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success Add New Todo'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => Home()),
+                        (Route<dynamic> route) => false,
+                  );
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }).catchError((error) {
     // The write failed...
     print("Someting wrong");
@@ -93,6 +90,14 @@ class _InputTodoState extends State<InputTodo> {
         print('User is signed in!');
       }
     });
+  }
+
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    titleController.clear();
+    descController.clear();
+    selectedOption = -1;
+    super.dispose();
   }
 
   @override
