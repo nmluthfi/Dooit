@@ -90,15 +90,15 @@ class _HomeState extends State<Home> {
           ],
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.black,
-            ),
-            onPressed: () {
-
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.search,
+          //     color: Colors.black,
+          //   ),
+          //   onPressed: () {
+          //
+          //   },
+          // ),
           IconButton(
               onPressed: ()  => showDialog<String>(
               context: context,
@@ -106,15 +106,20 @@ class _HomeState extends State<Home> {
                 content: const Text('Are you sure wants to logout?'),
                 actions: <Widget>[
                   TextButton(
-                    onPressed: () => Navigator.pop(context, 'Cancel'),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
                     onPressed: () {
                       logout(context);
                     },
-                    child: const Text('Yes'),
+                    child: const Text(
+                        'Yes',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Cancel'),
+                  ),
                  ],
                 ),
               ),

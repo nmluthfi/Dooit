@@ -1,16 +1,9 @@
 import 'package:dooit/Home/home.dart';
-import 'package:dooit/home/empty_state.dart';
-import 'package:dooit/screens/splash_screen.dart';
-import 'package:dooit/todo/todo.dart';
-import 'package:dooit/todo/todo_detail.dart';
-import 'package:dooit/todo/todo_input.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
+// firebease
+import 'package:firebase_core/firebase_core.dart';
 // flutter
 import 'package:flutter/material.dart';
 
-// firebease
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {

@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 // firebase
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../Home/home.dart';
@@ -134,15 +133,15 @@ class _InputTodoState extends State<InputTodo> {
           ],
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.image,
-              color: Colors.black,
-            ),
-            onPressed: () {
-
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.image,
+          //     color: Colors.black,
+          //   ),
+          //   onPressed: () {
+          //
+          //   },
+          // ),
           IconButton(
             padding: EdgeInsets.fromLTRB(4, 0, 2, 0),
             constraints: BoxConstraints(),

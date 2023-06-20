@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:dooit/Home/home.dart';
 import 'package:dooit/model/todo.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:faker/faker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:faker/faker.dart';
-import 'package:lorem_ipsum/lorem_ipsum.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DetailTodo extends StatefulWidget {
@@ -160,15 +158,15 @@ class _DetailTodoState extends State<DetailTodo> {
           ],
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.image,
-              color: Colors.black,
-            ),
-            onPressed: () {
-
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(
+          //     Icons.image,
+          //     color: Colors.black,
+          //   ),
+          //   onPressed: () {
+          //
+          //   },
+          // ),
           IconButton(
             padding: EdgeInsets.fromLTRB(4, 0, 2, 0),
             constraints: BoxConstraints(),
@@ -197,6 +195,10 @@ class _DetailTodoState extends State<DetailTodo> {
             },
           ),
           IconButton(
+            icon: Icon(
+              Icons.delete,
+              color: Colors.black,
+            ),
             onPressed: () {
               print("Todo to delete " + widget.todoId);
               showDialog(
@@ -238,10 +240,6 @@ class _DetailTodoState extends State<DetailTodo> {
                 },
               );
             },
-            icon: Icon(
-              Icons.delete,
-              color: Colors.black,
-            ),
           ),
           SizedBox(width: 16),
         ],

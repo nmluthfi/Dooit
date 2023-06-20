@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:dooit/todo/todo_detail.dart';
 import 'package:faker/faker.dart';
@@ -6,11 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:random_date/random_date.dart';
-import 'dart:math';
+
 import '../model/todo.dart';
 import '../todo/todo_input.dart';
-import 'package:intl/intl.dart';
 
 // This is the list type used by the popup menu below.
 enum MenuItem { itemOne }

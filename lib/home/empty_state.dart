@@ -1,4 +1,3 @@
-import 'package:dooit/todo/todo.dart';
 import 'package:dooit/todo/todo_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
