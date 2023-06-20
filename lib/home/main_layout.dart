@@ -69,7 +69,22 @@ class _MainLayoutState extends State<MainLayout> {
       setState(() {
         todos = fetchedTodos;
       });
+
     }
+  }
+
+  void deleteTodoFromFirebase(String todoId) {
+    DatabaseReference todoToDelete = FirebaseDatabase.instance
+        .ref('todos').child(todoId);
+    todoToDelete.remove().then((value) {
+      print("Todo deleted successfully");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Todo deleted successfully')),
+      );
+      fetchTodosFromFirebase();
+    }).catchError((error) {
+      print("Failed to delete todo: $error");
+    });
   }
 
   @override
@@ -191,7 +206,45 @@ class _MainLayoutState extends State<MainLayout> {
                                       initialValue: selectedMenu,
                                       // Callback that sets the selected popup menu item.
                                       onSelected: (MenuItem item) {
-                                        print("Selected item $item");
+                                        print("Selected item $item to delete" + todo.todoId);
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Are you sure, want to delete ' + todo.title + '?'),
+                                              actions: [
+                                                TextButton(
+                                                    child: Text(
+                                                        'OK',
+                                                        style: TextStyle(
+                                                          color: Colors.red,
+                                                        )
+                                                    ),
+                                                    onPressed: () {
+                                                      print("Ok");
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                            duration: Duration(seconds: 1),
+                                                            content: Text("Deleting " + todo.title + '...'),
+                                                        ),
+                                                      );
+                                                      deleteTodoFromFirebase(todo.todoId);
+                                                      Timer(Duration(seconds: 1), () {
+                                                        Navigator.of(context).pop();
+                                                      });
+                                                    },
+                                                ),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      print("No");
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                    child: Text("No")
+                                                )
+                                              ],
+                                            );
+                                          },
+                                        );
                                       },
                                       itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItem>>[
                                         const PopupMenuItem<MenuItem>(
@@ -213,7 +266,6 @@ class _MainLayoutState extends State<MainLayout> {
                 );
               },
             ),
-
           ),
         ),
         Container(
