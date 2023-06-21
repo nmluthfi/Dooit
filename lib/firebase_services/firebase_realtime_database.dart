@@ -51,8 +51,7 @@ Future<void> CreateNewTodo(BuildContext context,
     String userId,
     String titleController,
     String descController,
-    int selectedOption
-    ) async {
+    int selectedOption) async {
 
   await ref.child("todos").push().set({
     "userid": userId,
@@ -89,4 +88,53 @@ Future<void> CreateNewTodo(BuildContext context,
     print("Someting went wrong");
   });
 
+}
+
+void updateTodo(BuildContext context,
+    DatabaseReference todosRef,
+    String todoId,
+    String titleController,
+    String descController,
+    int selectedOption) {
+  todosRef.update({
+    'title': titleController,
+    'description': descController,
+    'label': selectedOption,
+    'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+  }).then((value) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Todo updated successfully')),
+    );
+    // navigate to HomePage
+    Timer(Duration(seconds: 3), () {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => Home()),
+            (Route<dynamic> route) => false,
+      );
+    });
+  }).catchError((error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to update todo')),
+    );
+  });
+}
+
+void deleteTodoFromFirebase(BuildContext context, String todoId) {
+  DatabaseReference todoToDelete = FirebaseDatabase.instance
+      .ref('todos').child(todoId);
+  todoToDelete.remove().then((value) {
+    print("Todo deleted successfully");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Todo deleted successfully')),
+    );
+    // navigate to HomePage
+    Timer(Duration(seconds: 1), () {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => Home()),
+            (Route<dynamic> route) => false,
+      );
+    });
+  }).catchError((error) {
+    print("Failed to delete todo: $error");
+  });
 }

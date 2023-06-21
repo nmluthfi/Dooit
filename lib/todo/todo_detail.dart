@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../firebase_services/firebase_realtime_database.dart';
+
 class DetailTodo extends StatefulWidget {
   // In the constructor, require the key.
   const DetailTodo({Key? key, required this.todoId});
@@ -83,50 +85,6 @@ class _DetailTodoState extends State<DetailTodo> {
     });
   }
 
-  void updateTodoData(BuildContext context) {
-    todosRef.update({
-      'title': titleController.text,
-      'description': descController.text,
-      'label': selectedOption,
-      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-    }).then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Todo updated successfully')),
-      );
-      // navigate to HomePage
-      Timer(Duration(seconds: 3), () {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => Home()),
-              (Route<dynamic> route) => false,
-        );
-      });
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update todo')),
-      );
-    });
-  }
-
-  void deleteTodoFromFirebase(String todoId) {
-    DatabaseReference todoToDelete = FirebaseDatabase.instance
-        .ref('todos').child(todoId);
-    todoToDelete.remove().then((value) {
-      print("Todo deleted successfully");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Todo deleted successfully')),
-      );
-      // navigate to HomePage
-      Timer(Duration(seconds: 2), () {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => Home()),
-              (Route<dynamic> route) => false,
-        );
-      });
-    }).catchError((error) {
-      print("Failed to delete todo: $error");
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,7 +148,7 @@ class _DetailTodoState extends State<DetailTodo> {
                     const SnackBar(content: Text('Processing Data')),
                   );
                   // saveTodo(context);
-                  updateTodoData(context);
+                  updateTodo(context, todosRef, widget.todoId, titleController.text, descController.text, selectedOption);
                 }
               }
             },
@@ -223,7 +181,7 @@ class _DetailTodoState extends State<DetailTodo> {
                               content: Text("Deleting " + todo.title + '...'),
                             ),
                           );
-                          deleteTodoFromFirebase(widget.todoId);
+                          deleteTodoFromFirebase(context, widget.todoId);
                           Timer(Duration(seconds: 1), () {
                             Navigator.of(context).pop();
                           });
