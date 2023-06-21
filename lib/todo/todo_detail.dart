@@ -275,6 +275,9 @@ class _DetailTodoState extends State<DetailTodo> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold
                     ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black.withOpacity(0.5)),
+                    ),
                     border: InputBorder.none,
                   ),
                   validator: (value) {
@@ -304,6 +307,9 @@ class _DetailTodoState extends State<DetailTodo> {
                       color: Color(0xd8000000),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black.withOpacity(0.5)),
                     ),
                     border: InputBorder.none,
                   ),
