@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../Home/home.dart';
+import '../firebase_services/firebase_realtime_database.dart';
 import '../screens/splash_screen.dart';
 
 FirebaseDatabase database = FirebaseDatabase.instance;
@@ -26,45 +27,6 @@ final titleController = TextEditingController();
 final descController = TextEditingController();
 
 var userId;
-
-Future<void> saveTodo(BuildContext context) async {
-
-  await ref.child("todos").push().set({
-    "userid": userId,
-    "title": titleController.text,
-    "description": descController.text,
-    "label": selectedOption,
-    "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
-  }).then((_) {
-    print("Success Add New Todo");
-    // Data saved successfully!
-    Timer(Duration(seconds: 2), () {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success Add New Todo'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => Home()),
-                        (Route<dynamic> route) => false,
-                  );
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    });
-  }).catchError((error) {
-    // The write failed...
-    print("Someting wrong");
-  });
-
-}
 
 class InputTodo extends StatefulWidget {
   @override
@@ -164,7 +126,7 @@ class _InputTodoState extends State<InputTodo> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Creating new todo')),
                   );
-                  saveTodo(context);
+                  CreateNewTodo(context, ref, userId, titleController.text, descController.text, selectedOption);
                 }
               }
             },

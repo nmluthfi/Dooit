@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../Home/home.dart';
 import '../model/todo.dart';
 
 // Future<void> fetchTodosFromFirebase(Query todosRef) async {
@@ -42,3 +45,48 @@ import '../model/todo.dart';
 //     print("Failed to delete todo: $error");
 //   });
 // }
+
+Future<void> CreateNewTodo(BuildContext context,
+    DatabaseReference ref,
+    String userId,
+    String titleController,
+    String descController,
+    int selectedOption
+    ) async {
+
+  await ref.child("todos").push().set({
+    "userid": userId,
+    "title": titleController,
+    "description": descController,
+    "label": selectedOption,
+    "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
+  }).then((_) {
+    print("Success Add New Todo");
+    // Data saved successfully!
+    Timer(Duration(seconds: 2), () {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success Add New Todo'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => Home()),
+                        (Route<dynamic> route) => false,
+                  );
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }).catchError((error) {
+    // The write failed...
+    print("Someting went wrong");
+  });
+
+}
