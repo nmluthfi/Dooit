@@ -7,27 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../firebase_services/firebase_authentication.dart';
+
 // reference to todos in the database
 DatabaseReference todosCount = FirebaseDatabase.instance.ref('todos');
 
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
-}
-
-
-Future<void> logout(BuildContext context) async {
-  // logout users from the app
-  await FirebaseAuth.instance.signOut();
-
-  // reset GoogleSignIn flow
-  await GoogleSignIn().signOut();
-  await GoogleSignIn().disconnect();
-
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (context) => SplashScreen()),
-        (Route<dynamic> route) => false,
-  );
 }
 
 class _HomeState extends State<Home> {

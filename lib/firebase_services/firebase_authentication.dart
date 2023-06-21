@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../Home/home.dart';
+import '../screens/splash_screen.dart';
 
 Future<UserCredential> signInWithGoogle(BuildContext context, DatabaseReference ref) async {
   // Trigger the authentication flow
@@ -73,4 +74,18 @@ Future<UserCredential> signInWithGoogle(BuildContext context, DatabaseReference 
     throw e;
   }
 
+}
+
+Future<void> logout(BuildContext context) async {
+  // logout users from the app
+  await FirebaseAuth.instance.signOut();
+
+  // reset GoogleSignIn flow
+  await GoogleSignIn().signOut();
+  await GoogleSignIn().disconnect();
+
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => SplashScreen()),
+        (Route<dynamic> route) => false,
+  );
 }
