@@ -140,12 +140,12 @@ class _DetailTodoState extends State<DetailTodo> {
         elevation: 0,
         title: Row(
           children: [
-            SvgPicture.network(
-                'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fdooit_logo.svg?alt=media&token=059e3656-89dc-4e2b-810c-89485b210b88',
-                width: 25,
-                height: 25,
-                fit: BoxFit.contain
-            ),
+            // SvgPicture.network(
+            //     'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fdooit_logo.svg?alt=media&token=059e3656-89dc-4e2b-810c-89485b210b88',
+            //     width: 25,
+            //     height: 25,
+            //     fit: BoxFit.contain
+            // ),
             SizedBox(width: 7),
             Text(
                 'Dooit',
@@ -251,12 +251,12 @@ class _DetailTodoState extends State<DetailTodo> {
             margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
             child: Column(
               children: [
-                SvgPicture.network(
-                  "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
-                  fit: BoxFit.fill,
-                  width: 250,
-                  height: 180,
-                ),
+                // SvgPicture.network(
+                //   "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
+                //   fit: BoxFit.fill,
+                //   width: 250,
+                //   height: 180,
+                // ),
                 TextFormField(
                   controller: titleController,
                   maxLines: 1,
@@ -290,7 +290,7 @@ class _DetailTodoState extends State<DetailTodo> {
                     FocusScope.of(context).unfocus();
                   },
                   keyboardType: TextInputType.multiline,
-                  maxLines: 17,
+                  maxLines: 30,
                   minLines: 1,
                   style: TextStyle(
                     color: Color(0xd8000000),
