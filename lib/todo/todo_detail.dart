@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../firebase_services/firebase_realtime_database.dart';
+
 class DetailTodo extends StatefulWidget {
   // In the constructor, require the key.
   const DetailTodo({Key? key, required this.todoId});
@@ -83,53 +85,10 @@ class _DetailTodoState extends State<DetailTodo> {
     });
   }
 
-  void updateTodoData(BuildContext context) {
-    todosRef.update({
-      'title': titleController.text,
-      'description': descController.text,
-      'label': selectedOption,
-      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-    }).then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Todo updated successfully')),
-      );
-      // navigate to HomePage
-      Timer(Duration(seconds: 3), () {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => Home()),
-              (Route<dynamic> route) => false,
-        );
-      });
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update todo')),
-      );
-    });
-  }
-
-  void deleteTodoFromFirebase(String todoId) {
-    DatabaseReference todoToDelete = FirebaseDatabase.instance
-        .ref('todos').child(todoId);
-    todoToDelete.remove().then((value) {
-      print("Todo deleted successfully");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Todo deleted successfully')),
-      );
-      // navigate to HomePage
-      Timer(Duration(seconds: 2), () {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => Home()),
-              (Route<dynamic> route) => false,
-        );
-      });
-    }).catchError((error) {
-      print("Failed to delete todo: $error");
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -139,12 +98,12 @@ class _DetailTodoState extends State<DetailTodo> {
         elevation: 0,
         title: Row(
           children: [
-            SvgPicture.network(
-                'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fdooit_logo.svg?alt=media&token=059e3656-89dc-4e2b-810c-89485b210b88',
-                width: 25,
-                height: 25,
-                fit: BoxFit.contain
-            ),
+            // SvgPicture.network(
+            //     'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fdooit_logo.svg?alt=media&token=059e3656-89dc-4e2b-810c-89485b210b88',
+            //     width: 25,
+            //     height: 25,
+            //     fit: BoxFit.contain
+            // ),
             SizedBox(width: 7),
             Text(
                 'Dooit',
@@ -189,7 +148,7 @@ class _DetailTodoState extends State<DetailTodo> {
                     const SnackBar(content: Text('Processing Data')),
                   );
                   // saveTodo(context);
-                  updateTodoData(context);
+                  updateTodo(context, todosRef, widget.todoId, titleController.text, descController.text, selectedOption);
                 }
               }
             },
@@ -222,7 +181,7 @@ class _DetailTodoState extends State<DetailTodo> {
                               content: Text("Deleting " + todo.title + '...'),
                             ),
                           );
-                          deleteTodoFromFirebase(widget.todoId);
+                          deleteTodo(context, widget.todoId);
                           Timer(Duration(seconds: 1), () {
                             Navigator.of(context).pop();
                           });
@@ -250,12 +209,12 @@ class _DetailTodoState extends State<DetailTodo> {
             margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
             child: Column(
               children: [
-                SvgPicture.network(
-                  "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
-                  fit: BoxFit.fill,
-                  width: 250,
-                  height: 180,
-                ),
+                // SvgPicture.network(
+                //   "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
+                //   fit: BoxFit.fill,
+                //   width: 250,
+                //   height: 180,
+                // ),
                 TextFormField(
                   controller: titleController,
                   maxLines: 1,
@@ -274,6 +233,9 @@ class _DetailTodoState extends State<DetailTodo> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold
                     ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black.withOpacity(0.5)),
+                    ),
                     border: InputBorder.none,
                   ),
                   validator: (value) {
@@ -289,7 +251,7 @@ class _DetailTodoState extends State<DetailTodo> {
                     FocusScope.of(context).unfocus();
                   },
                   keyboardType: TextInputType.multiline,
-                  maxLines: 17,
+                  maxLines: 30,
                   minLines: 1,
                   style: TextStyle(
                     color: Color(0xd8000000),
@@ -303,6 +265,9 @@ class _DetailTodoState extends State<DetailTodo> {
                       color: Color(0xd8000000),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black.withOpacity(0.5)),
                     ),
                     border: InputBorder.none,
                   ),

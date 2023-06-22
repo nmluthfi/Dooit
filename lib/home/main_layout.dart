@@ -41,6 +41,8 @@ class _MainLayoutState extends State<MainLayout> {
       .orderByChild("userid")
       .equalTo(FirebaseAuth.instance.currentUser!.uid);
 
+  final searchFilter = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -92,129 +94,176 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        Container(
+          margin: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+          child: TextFormField(
+            controller: searchFilter,
+            onChanged: (String value) {
+              setState(() {
+
+              });
+            },
+            onTapOutside: (text) {
+              FocusScope.of(context).unfocus();
+            },
+            maxLines: 1,
+            decoration: InputDecoration(
+              hintText: 'Search any todo here...',
+              hintStyle: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black.withOpacity(0.5),
+              ),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.black.withOpacity(1),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: Colors.black.withOpacity(1),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: Colors.black.withOpacity(1),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: Colors.black.withOpacity(1),
+                ),
+              ),
+            ),
+          ),
+        ),
         Expanded(
           child: Container(
-            margin: const EdgeInsets.fromLTRB(24, 0, 24, 18),
+            margin: const EdgeInsets.fromLTRB(24, 72, 24, 18),
             child: ListView.builder(
               itemCount: todos.length,
               itemBuilder: (context, index) {
                 final todo = todos[index];
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: Colors.black,
+                final title = todo.title.toLowerCase();
+                if (searchFilter.text.isEmpty) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Colors.black,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  color: Colors.primaries[Random().nextInt(Colors.primaries.length)].withOpacity(0.5),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DetailTodo(todoId: todo.todoId)),
-                      );
-                      print(todo.todoId);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          SvgPicture.network(
-                            "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
-                            fit: BoxFit.fill,
-                            width: 250,
-                            height: 180,
-                          ),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              todo.title,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              todo.description,
-                              maxLines: 3,
-                              textAlign: TextAlign.left,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                height: 1.3,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black.withOpacity(0.9),
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xff000000),
-                                  borderRadius: BorderRadius.circular(4),
+                    color: Colors.primaries[Random().nextInt(Colors.primaries.length)].withOpacity(0.5),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DetailTodo(todoId: todo.todoId)),
+                        );
+                        print(todo.todoId);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            // SvgPicture.network(
+                            //   "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
+                            //   fit: BoxFit.fill,
+                            //   width: 250,
+                            //   height: 180,
+                            // ),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                todo.title,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
                                 ),
-                                margin: EdgeInsets.fromLTRB(0, 8, 16, 0),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    todo.label,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                todo.description,
+                                maxLines: 3,
+                                textAlign: TextAlign.left,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  height: 1.3,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black.withOpacity(0.9),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xff000000),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  margin: EdgeInsets.fromLTRB(0, 8, 16, 0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      todo.label,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                child: Row(
-                                  children: [
-                                    SvgPicture.network(
-                                      'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Ficon_calendar.svg?alt=media&token=8ea6944c-c521-4aaf-a0f0-8ce92cf86594',
-                                      width: 25,
-                                      height: 25,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Container(
-                                      margin: EdgeInsets.fromLTRB(0, 1.5, 0, 0),
-                                      child: Text(
-                                        DateFormat('dd - MM - yyyy').format(todo.date),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xFF000000),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.network(
+                                        'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Ficon_calendar.svg?alt=media&token=8ea6944c-c521-4aaf-a0f0-8ce92cf86594',
+                                        width: 25,
+                                        height: 25,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Container(
+                                        margin: EdgeInsets.fromLTRB(0, 1.5, 0, 0),
+                                        child: Text(
+                                          DateFormat('dd - MM - yyyy').format(todo.date),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF000000),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: PopupMenuButton<MenuItem>(
-                                      initialValue: selectedMenu,
-                                      // Callback that sets the selected popup menu item.
-                                      onSelected: (MenuItem item) {
-                                        print("Selected item $item to delete" + todo.todoId);
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Are you sure, want to delete ' + todo.title + '?'),
-                                              actions: [
-                                                TextButton(
+                                Expanded(
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: PopupMenuButton<MenuItem>(
+                                        initialValue: selectedMenu,
+                                        // Callback that sets the selected popup menu item.
+                                        onSelected: (MenuItem item) {
+                                          print("Selected item $item to delete" + todo.todoId);
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text('Are you sure, want to delete ' + todo.title + '?'),
+                                                actions: [
+                                                  TextButton(
                                                     child: Text(
                                                         'OK',
                                                         style: TextStyle(
@@ -225,8 +274,8 @@ class _MainLayoutState extends State<MainLayout> {
                                                       print("Ok");
                                                       ScaffoldMessenger.of(context).showSnackBar(
                                                         SnackBar(
-                                                            duration: Duration(seconds: 1),
-                                                            content: Text("Deleting " + todo.title + '...'),
+                                                          duration: Duration(seconds: 1),
+                                                          content: Text("Deleting " + todo.title + '...'),
                                                         ),
                                                       );
                                                       deleteTodoFromFirebase(todo.todoId);
@@ -234,37 +283,207 @@ class _MainLayoutState extends State<MainLayout> {
                                                         Navigator.of(context).pop();
                                                       });
                                                     },
-                                                ),
-                                                TextButton(
-                                                    onPressed: () {
-                                                      print("No");
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                    child: Text("No")
-                                                )
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItem>>[
-                                        const PopupMenuItem<MenuItem>(
-                                          value: MenuItem.itemOne,
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
+                                                  ),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        print("No");
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text("No")
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItem>>[
+                                          const PopupMenuItem<MenuItem>(
+                                            value: MenuItem.itemOne,
+                                            child: Text('Delete'),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  margin: EdgeInsets.fromLTRB(0, 9, 0, 9),
-                );
+                    margin: EdgeInsets.fromLTRB(0, 9, 0, 9),
+                  );
+                } else if (searchFilter.text.isNotEmpty && title.contains(searchFilter.text.toLowerCase().toString())) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Colors.black,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    color: Colors.primaries[Random().nextInt(Colors.primaries.length)].withOpacity(0.5),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DetailTodo(todoId: todo.todoId)),
+                        );
+                        print(todo.todoId);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            // SvgPicture.network(
+                            //   "https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Fempty_todo_state.svg?alt=media&token=7297b2d0-87e6-4585-a2b7-2bb3fe6e6df9",
+                            //   fit: BoxFit.fill,
+                            //   width: 250,
+                            //   height: 180,
+                            // ),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                todo.title,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                todo.description,
+                                maxLines: 3,
+                                textAlign: TextAlign.left,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  height: 1.3,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black.withOpacity(0.9),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xff000000),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  margin: EdgeInsets.fromLTRB(0, 8, 16, 0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      todo.label,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.network(
+                                        'https://firebasestorage.googleapis.com/v0/b/doit-766f8.appspot.com/o/assets%2Ficon_calendar.svg?alt=media&token=8ea6944c-c521-4aaf-a0f0-8ce92cf86594',
+                                        width: 25,
+                                        height: 25,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Container(
+                                        margin: EdgeInsets.fromLTRB(0, 1.5, 0, 0),
+                                        child: Text(
+                                          DateFormat('dd - MM - yyyy').format(todo.date),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF000000),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: PopupMenuButton<MenuItem>(
+                                        initialValue: selectedMenu,
+                                        // Callback that sets the selected popup menu item.
+                                        onSelected: (MenuItem item) {
+                                          print("Selected item $item to delete" + todo.todoId);
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text('Are you sure, want to delete ' + todo.title + '?'),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text(
+                                                        'OK',
+                                                        style: TextStyle(
+                                                          color: Colors.red,
+                                                        )
+                                                    ),
+                                                    onPressed: () {
+                                                      print("Ok");
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                          duration: Duration(seconds: 1),
+                                                          content: Text("Deleting " + todo.title + '...'),
+                                                        ),
+                                                      );
+                                                      deleteTodoFromFirebase(todo.todoId);
+                                                      Timer(Duration(seconds: 1), () {
+                                                        Navigator.of(context).pop();
+                                                      });
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        print("No");
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text("No")
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItem>>[
+                                          const PopupMenuItem<MenuItem>(
+                                            value: MenuItem.itemOne,
+                                            child: Text('Delete'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    margin: EdgeInsets.fromLTRB(0, 9, 0, 9),
+                  );
+                } else {
+                  return Container();
+                }
               },
             ),
           ),
