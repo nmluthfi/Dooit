@@ -119,7 +119,7 @@ void updateTodo(BuildContext context,
   });
 }
 
-void deleteTodoFromFirebase(BuildContext context, String todoId) {
+void deleteTodo(BuildContext context, String todoId) {
   DatabaseReference todoToDelete = FirebaseDatabase.instance
       .ref('todos').child(todoId);
   todoToDelete.remove().then((value) {

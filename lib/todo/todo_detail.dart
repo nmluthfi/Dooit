@@ -181,7 +181,7 @@ class _DetailTodoState extends State<DetailTodo> {
                               content: Text("Deleting " + todo.title + '...'),
                             ),
                           );
-                          deleteTodoFromFirebase(context, widget.todoId);
+                          deleteTodo(context, widget.todoId);
                           Timer(Duration(seconds: 1), () {
                             Navigator.of(context).pop();
                           });
